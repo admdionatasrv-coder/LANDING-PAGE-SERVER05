@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Posto de Combustível</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-white p-4 md:p-8 font-sans">
+    <div class="max-w-7xl mx-auto space-y-8">
+        <header class="flex justify-between items-center bg-gray-800 p-6 rounded-xl shadow-lg border-b-4 border-yellow-500">
+            <h1 class="text-3xl font-bold text-yellow-400 flex items-center">
+                <i class="fas fa-gas-pump mr-3"></i> Gestão Posto
+            </h1>
+            <p class="text-gray-400">Dashboard Operacional</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Simulador de Combustível -->
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-semibold mb-6 text-blue-400 flex items-center"><i class="fas fa-tint mr-2"></i> Simulador de Combustível</h2>
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm mb-2 text-gray-300">Preço por Litro (R$)</label>
+                        <input type="number" id="fuelPrice" class="w-full bg-gray-700 text-white rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" value="5.99">
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-2 text-gray-300">Quantidade (Litros)</label>
+                        <input type="number" id="fuelQty" class="w-full bg-gray-700 text-white rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" placeholder="Ex: 50">
+                    </div>
+                    <button onclick="calculateFuel()" class="w-full bg-blue-600 hover:bg-blue-500 transition p-3 rounded-lg font-bold text-lg shadow-md">Calcular Valor</button>
+                    <div class="mt-4 p-4 bg-gray-900 rounded-lg text-xl flex justify-between items-center">
+                        <span class="text-gray-400">Total a Pagar:</span> 
+                        <span id="fuelTotal" class="text-yellow-400 font-bold text-2xl">R$ 0,00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculadora -->
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-semibold mb-6 text-blue-400 flex items-center"><i class="fas fa-calculator mr-2"></i> Calculadora Rápida</h2>
+                <div class="bg-gray-900 border border-gray-600 p-4 rounded-lg text-right text-3xl mb-6 font-mono h-16 overflow-hidden flex items-center justify-end text-white" id="calcDisplay">0</div>
+                <div class="grid grid-cols-4 gap-3">
+                    <button onclick="calcInput('7')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-xl font-bold transition">7</button>
+                    <button onclick="calcInput('8')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-xl font-bold transition">8</button>
+                    <button onclick="calcInput('9')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-xl font-bold transition">9</button>
+                    <button onclick="calcInput('/')" class="bg-yellow-600 p-4 rounded-lg hover:bg-yellow-500 text-xl font-bold transition text-gray-900">/</button>
+
+                    <button onclick="calcInput('4')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-xl font-bold transition">4</button>
+                    <button onclick="calcInput('5')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-xl font-bold transition">5</button>
+                    <button onclick="calcInput('6')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-xl font-bold transition">6</button>
+                    <button onclick="calcInput('*')" class="bg-yellow-600 p-4 rounded-lg hover:bg-yellow-500 text-xl font-bold transition text-gray-900">X</button>
+
+                    <button onclick="calcInput('1')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-xl font-bold transition">1</button>
+                    <button onclick="calcInput('2')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-xl font-bold transition">2</button>
+                    <button onclick="calcInput('3')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-xl font-bold transition">3</button>
+                    <button onclick="calcInput('-')" class="bg-yellow-600 p-4 rounded-lg hover:bg-yellow-500 text-xl font-bold transition text-gray-900">-</button>
+
+                    <button onclick="calcInput('C')" class="bg-red-600 p-4 rounded-lg hover:bg-red-500 text-white font-bold text-xl transition">C</button>
+                    <button onclick="calcInput('0')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-xl font-bold transition">0</button>
+                    <button onclick="calcInput('=')" class="bg-green-600 p-4 rounded-lg hover:bg-green-500 font-bold text-xl transition text-white">=</button>
+                    <button onclick="calcInput('+')" class="bg-yellow-600 p-4 rounded-lg hover:bg-yellow-500 text-xl font-bold transition text-gray-900">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controle de Cheques por Turno -->
+        <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+            <h2 class="text-2xl font-semibold mb-6 text-blue-400 flex items-center"><i class="fas fa-money-check-alt mr-2"></i> Lançamento de Cheques por Turno</h2>
+            <div class="flex flex-col md:flex-row gap-4 mb-8">
+                <select id="shiftSelect" class="bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 md:w-48">
+                    <option value="Manhã">Turno: Manhã</option>
+                    <option value="Tarde">Turno: Tarde</option>
+                    <option value="Noite">Turno: Noite</option>
+                </select>
+                <div class="relative flex-1">
+                    <span class="absolute left-3 top-3 text-gray-400">R$</span>
+                    <input type="number" id="checkValue" class="w-full bg-gray-900 text-white p-3 pl-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" placeholder="0.00">
+                </div>
+                <button onclick="addCheck()" class="bg-green-600 hover:bg-green-500 transition px-6 py-3 rounded-lg font-bold shadow-md text-white">Lançar Cheque</button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="shiftTotals">
+                <!-- Turnos dinamicos gerados pelo JS -->
+            </div>
+            
+            <div class="mt-8 bg-gray-900 p-4 rounded-lg border border-gray-700 flex justify-between items-center">
+                <h3 class="text-xl text-gray-300">Total Geral Acumulado:</h3>
+                <span id="totalAllChecks" class="text-green-400 font-bold text-2xl">R$ 0,00</span>
+            </div>
+        </div>
+
+        <!-- Orçamento e Produtos (Óleos, Filtros) -->
+        <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
+                <h2 class="text-2xl font-semibold text-blue-400 flex items-center"><i class="fas fa-boxes mr-2"></i> Orçamentos & Estoque</h2>
+                <div class="flex flex-wrap gap-3">
+                    <label class="bg-blue-600 hover:bg-blue-500 transition px-5 py-2.5 rounded-lg cursor-pointer font-bold shadow-md flex items-center text-sm">
+                        <i class="fas fa-file-import mr-2"></i> Importar CSV
+                        <input type="file" id="importCsv" accept=".csv" class="hidden" onchange="importData(event)">
+                    </label>
+                    <button onclick="exportData()" class="bg-yellow-600 hover:bg-yellow-500 text-gray-900 transition px-5 py-2.5 rounded-lg font-bold shadow-md flex items-center text-sm">
+                        <i class="fas fa-file-export mr-2"></i> Exportar Dados
+                    </button>
+                </div>
+            </div>
+
+            <!-- Adicionar Item Manualmente -->
+            <div class="flex flex-col md:flex-row gap-3 mb-6 p-4 bg-gray-900 rounded-lg border border-gray-700">
+                <input type="text" id="itemName" placeholder="Descrição do Produto (Ex: Óleo 5W40)" class="bg-gray-800 text-white p-3 rounded-lg flex-1 focus:ring-2 focus:ring-yellow-400 outline-none">
+                <input type="number" id="itemQty" placeholder="Qtd" class="bg-gray-800 text-white p-3 rounded-lg w-full md:w-24 focus:ring-2 focus:ring-yellow-400 outline-none">
+                <input type="number" id="itemPrice" placeholder="Preço (R$)" class="bg-gray-800 text-white p-3 rounded-lg w-full md:w-32 focus:ring-2 focus:ring-yellow-400 outline-none">
+                <button onclick="addItem()" class="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-lg font-bold transition shadow-md whitespace-nowrap"><i class="fas fa-plus mr-1"></i> Incluir</button>
+            </div>
+
+            <div class="overflow-x-auto bg-gray-900 rounded-lg border border-gray-700">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-800 border-b border-gray-700 text-gray-300">
+                            <th class="p-4 font-semibold">Produto / Descrição</th>
+                            <th class="p-4 font-semibold">Qtd</th>
+                            <th class="p-4 font-semibold">Preço Unit.</th>
+                            <th class="p-4 font-semibold">Subtotal</th>
+                            <th class="p-4 font-semibold text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="budgetTable">
+                        <!-- Items inserted via JS -->
+                        <tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum item no orçamento. Adicione ou importe uma lista.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-6 flex justify-end items-center bg-gray-900 p-4 rounded-lg border border-gray-700">
+                <span class="text-xl text-gray-300 mr-4">Total do Orçamento:</span>
+                <span id="budgetTotal" class="text-yellow-400 font-bold text-3xl">R$ 0,00</span>
+            </div>
+        </div>
+        
+        <footer class="text-center text-gray-500 text-sm mt-8 pb-4">
+            Sistema Gerador de Orçamentos e Gestão - Desenvolvido para Postos de Combustíveis
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
